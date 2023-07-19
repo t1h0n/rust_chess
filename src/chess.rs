@@ -631,32 +631,34 @@ pub fn postprocess_move(
     new_game_data.moved_2_squares = None;
     let mut to_be_promoted = None;
     // castling
-    if matches!(moving_piece, PieceType::King(_)) && (start.x - end.x).abs() == 2 {
+    if matches!(moving_piece, PieceType::King(_)) {
         new_game_data.castling.remove(&game_data.to_move);
-        if end.x == 6 {
-            let rook = new_game_data
-                .board
-                .remove(&Position { x: 7, ..end })
-                .unwrap();
-            new_game_data.board.insert(
-                Position {
-                    x: end.x - 1,
-                    ..end
-                },
-                rook,
-            );
-        } else {
-            let rook = new_game_data
-                .board
-                .remove(&Position { x: 0, ..end })
-                .unwrap();
-            new_game_data.board.insert(
-                Position {
-                    x: end.x + 1,
-                    ..end
-                },
-                rook,
-            );
+        if (start.x - end.x).abs() == 2 {
+            if end.x == 6 {
+                let rook = new_game_data
+                    .board
+                    .remove(&Position { x: 7, ..end })
+                    .unwrap();
+                new_game_data.board.insert(
+                    Position {
+                        x: end.x - 1,
+                        ..end
+                    },
+                    rook,
+                );
+            } else {
+                let rook = new_game_data
+                    .board
+                    .remove(&Position { x: 0, ..end })
+                    .unwrap();
+                new_game_data.board.insert(
+                    Position {
+                        x: end.x + 1,
+                        ..end
+                    },
+                    rook,
+                );
+            }
         }
     }
     // en passant
