@@ -82,7 +82,6 @@ pub fn run() {
                             x: (x / 48) as i8,
                             y: (y / 48) as i8,
                         };
-                        println!("to pe promoted clicked {pos:?} {x} {y}");
                         if pos.x != 0 || !(6..10).contains(&pos.y) {
                             continue;
                         }
@@ -146,7 +145,6 @@ pub fn run() {
                         selected = None;
                         continue;
                     }
-                    println!("Clicked {x} {y}");
                     if let Some(&piece) = game_data.board.get(&pos) {
                         if piece.get_color() != game_data.to_move {
                             selected = None;
@@ -177,7 +175,6 @@ pub fn run() {
                     if selected.is_none() {
                         continue;
                     }
-                    // println!("drag {x} {y}");
                     selected_pos = glm::vec2(x as f32 - 48.0, 768.0 - y as f32 - 48.0);
                 }
                 _ => {}
@@ -197,14 +194,15 @@ pub fn run() {
             &projection,
         );
         if selected.is_some() {
-            draw_piece_at_pos(
-                *game_data.board.get(&selected.unwrap()).unwrap(),
-                selected_pos,
+            Sprite::new(
                 piece_program.clone(),
-                &piece_texture_map,
                 texture.clone(),
-                projection,
-            );
+                *piece_texture_map
+                    .get(game_data.board.get(&selected.unwrap()).unwrap())
+                    .unwrap(),
+                glm::vec4::<f32>(selected_pos.x, selected_pos.y, 96.0, 96.0),
+            )
+            .draw(projection);
         }
         if to_be_promoted.is_some() {
             let opposite = game_data.to_move.get_opposite();
@@ -252,22 +250,6 @@ pub fn run() {
     }
 }
 
-fn draw_piece_at_pos(
-    piece: PieceType,
-    position: glm::Vec2,
-    piece_program: Rc<ShaderProgram>,
-    piece_texture_map: &HashMap<PieceType, glm::Vec4>,
-    texture: Rc<Texture2D>,
-    projection: &glm::Mat4,
-) {
-    Sprite::new(
-        piece_program,
-        texture,
-        *piece_texture_map.get(&piece).unwrap(),
-        glm::vec4::<f32>(position.x, position.y, 96.0, 96.0),
-    )
-    .draw(projection);
-}
 fn draw(
     game_data: &GameData,
     selected: Option<Position>,
@@ -280,14 +262,13 @@ fn draw(
         if selected.is_some() && selected.unwrap() == p_pos {
             continue;
         }
-        draw_piece_at_pos(
-            p_type,
-            glm::vec2(p_pos.x as f32 * 96.0, p_pos.y as f32 * 96.0),
+        Sprite::new(
             piece_program.clone(),
-            piece_texture_map,
             texture.clone(),
-            projection,
-        );
+            *piece_texture_map.get(&p_type).unwrap(),
+            glm::vec4::<f32>(p_pos.x as f32 * 96.0, p_pos.y as f32 * 96.0, 96.0, 96.0),
+        )
+        .draw(projection);
     }
 }
 fn init_shaders() -> (Rc<ShaderProgram>, Rc<ShaderProgram>) {
