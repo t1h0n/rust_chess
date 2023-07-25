@@ -661,6 +661,17 @@ pub fn postprocess_move(
             }
         }
     }
+    else if matches!(moving_piece, PieceType::Rook(_))
+    {
+        if let Some(castling) = new_game_data.castling.get_mut(&moving_piece.get_color()) {
+            if start.x == 0 {
+                castling.queen_side = false;
+            }
+            else {
+                castling.king_side = false;
+            }
+        }
+    }
     // en passant
     else if matches!(moving_piece, PieceType::Pawn(_)) {
         new_game_data.can_move_2_squares.remove(&start);
