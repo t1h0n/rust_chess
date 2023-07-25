@@ -6,7 +6,6 @@ out vec2 TexCoord;
 uniform mat4 mvp;
 
 void main() {
-    // mvp * vec4(aPos, 1.0);
     gl_Position = mvp * vec4(aPos, 0.0, 1.0);
     TexCoord = aTexCoord;
 }
